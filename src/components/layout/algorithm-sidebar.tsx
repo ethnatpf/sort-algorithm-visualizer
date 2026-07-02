@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { ALGORITHM_LIST, type Algorithm } from "@/src/lib/constants";
 import { capitalizeFirstLetter } from "@/src/lib/string";
 import clsx from "clsx";
@@ -7,14 +7,37 @@ import { PauseIcon, PlayIcon, StepBack, StepForward } from "lucide-react";
 import { Slider } from "../shadcn/slider";
 import { Button } from "../shadcn/button";
 
-export default function AlgorithmSidebar() {
-  const [selectedAlgorithm, setSelectedAlgorithm] =
-    useState<Algorithm>("bubble");
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [step, setStep] = useState(0);
-  const [speed, setSpeed] = useState(50);
-  const [arrSize, setArrSize] = useState(40);
+interface Props {
+  // State
+  selectedAlgorithm: string;
+  setSelectedAlgorithm: Dispatch<SetStateAction<string>>;
+  isPlaying: boolean;
+  setIsPlaying: Dispatch<SetStateAction<boolean>>;
+  step: number;
+  setStep: Dispatch<SetStateAction<number>>;
+  speed: number;
+  setSpeed: Dispatch<SetStateAction<number>>;
+  arrSize: number;
+  setArrSize: Dispatch<SetStateAction<number>>;
+  // Events
+  onRandomize: () => void;
+  onReset: () => void;
+}
 
+export default function AlgorithmSidebar({
+  setSelectedAlgorithm,
+  selectedAlgorithm,
+  isPlaying,
+  setIsPlaying,
+  step,
+  setStep,
+  speed,
+  setSpeed,
+  arrSize,
+  setArrSize,
+  onRandomize,
+  onReset,
+}: Readonly<Props>) {
   return (
     <aside className="min-w-[360px] border-l border-[#FFFFFF]/15 p-4">
       {/* Algorithm selector */}
@@ -104,8 +127,10 @@ export default function AlgorithmSidebar() {
 
       {/* Buttons */}
       <div className="flex gap-2 mt-8">
-        <Button className="flex-1">Randomize</Button>
-        <Button className="flex-1" variant="outline">
+        <Button onClick={onRandomize} className="flex-1">
+          Randomize
+        </Button>
+        <Button onClick={onReset} className="flex-1" variant="outline">
           Reset
         </Button>
       </div>
