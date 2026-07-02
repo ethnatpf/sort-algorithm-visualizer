@@ -52,7 +52,7 @@ export default function AlgorithmSidebar({
               "cursor-pointer p-1 py-1.5 flex-1 text-sm",
               selectedAlgorithm === al
                 ? "text-[#0D0F13] bg-teal-accent rounded-lg font-semibold"
-                : "text-[#9CA3AF]",
+                : "text-secondary-text",
             )}
           >
             {capitalizeFirstLetter(al)}
@@ -86,7 +86,7 @@ export default function AlgorithmSidebar({
       {/* Timeline slider */}
       <div className="flex justify-between mb-2">
         <span className="sidebar-label block ">TIMELINE</span>
-        <span className="text-[11px] text-[#9CA3AF]">{step}/100</span>
+        <span className="text-[11px] text-secondary-text">{step}/100</span>
       </div>
       <Slider
         color="teal-accent"
@@ -100,7 +100,7 @@ export default function AlgorithmSidebar({
       {/* Speed slider */}
       <div className="flex justify-between mt-4 mb-5">
         <span className="sidebar-label block ">SPEED</span>
-        <span className="text-[11px] text-[#9CA3AF]">{speed}%</span>
+        <span className="text-[11px] text-secondary-text">{speed}%</span>
       </div>
       <Slider
         color="sky-accent"
@@ -114,7 +114,7 @@ export default function AlgorithmSidebar({
       {/* Array size */}
       <div className="flex justify-between mb-2 mt-5">
         <span className="sidebar-label block ">ARRAY SIZE</span>
-        <span className="text-[11px] text-[#9CA3AF]">{arrSize}</span>
+        <span className="text-[11px] text-secondary-text">{arrSize}</span>
       </div>
       <Slider
         color="indigo-accent"
