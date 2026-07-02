@@ -1,6 +1,6 @@
 "use client";
-import { Dispatch, SetStateAction, useState } from "react";
-import { ALGORITHM_LIST, type Algorithm } from "@/src/lib/constants";
+import { Dispatch, SetStateAction } from "react";
+import { ALGORITHM_LIST } from "@/src/lib/constants";
 import { capitalizeFirstLetter } from "@/src/lib/string";
 import clsx from "clsx";
 import { PauseIcon, PlayIcon, StepBack, StepForward } from "lucide-react";

@@ -23,6 +23,7 @@
 
 @theme inline {
     --font-inter: var(--font-inter);
+    --font-jetbrains-mono: var(--font-jetbrains-mono);
     --font-heading: var(--font-inter);
 
     --color-sidebar-ring: var(--sidebar-ring);
