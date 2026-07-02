@@ -15,12 +15,14 @@
 }
 
 @source inline("border-teal-accent");
-
 @source inline("border-sky-accent");
-@source inline("bg-sky-accent");
-
 @source inline("border-indigo-accent");
+@source inline("bg-sky-accent");
 @source inline("bg-indigo-accent");
+@source inline("bg-[#475569]");
+@source inline("bg-[#FBBF24]");
+@source inline("bg-[#F87171]");
+@source inline("bg-[#4ADE80]");
 
 @theme inline {
     --font-inter: var(--font-inter);

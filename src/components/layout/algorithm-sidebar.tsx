@@ -1,7 +1,7 @@
 "use client";
 import { Dispatch, SetStateAction } from "react";
-import { ALGORITHM_LIST } from "@/src/lib/constants";
-import { capitalizeFirstLetter } from "@/src/lib/string";
+import { ALGORITHM_LIST } from "@/lib/constants";
+import { capitalizeFirstLetter } from "@/lib/string";
 import clsx from "clsx";
 import { PauseIcon, PlayIcon, StepBack, StepForward } from "lucide-react";
 import { Slider } from "../shadcn/slider";
@@ -18,11 +18,14 @@ interface Props {
   speed: number;
   setSpeed: Dispatch<SetStateAction<number>>;
   arrSize: number;
-  setArrSize: Dispatch<SetStateAction<number>>;
+  setArrSize: (size: number) => void;
   // Events
   onRandomize: () => void;
   onReset: () => void;
 }
+
+const MAX_STEP = 100;
+const MIN_STEP = 0;
 
 export default function AlgorithmSidebar({
   setSelectedAlgorithm,
@@ -63,10 +66,16 @@ export default function AlgorithmSidebar({
       {/* Playback buttons */}
       <span className="sidebar-label block mb-4">PLAYBACK</span>
       <div className="flex gap-x-3 justify-center items-center mb-6">
-        <button className="w-10 h-10 flex items-center justify-center border border-white/15 rounded-xl bg-[#1B1E24] hover:bg-[#1B1E24]/75 transition-colors cursor-pointer">
+        <button
+          onClick={() => {
+            if (step > MIN_STEP) {
+              setStep(step - 1);
+            }
+          }}
+          className="w-10 h-10 flex items-center justify-center border border-white/15 rounded-xl bg-[#1B1E24] hover:bg-[#1B1E24]/75 transition-colors cursor-pointer"
+        >
           <StepBack width={16} />
         </button>
-
         <button
           onClick={() => setIsPlaying(!isPlaying)}
           className="bg-teal-accent hover:bg-teal-accent/90 transition-colors flex items-center justify-center p-3 rounded-xl w-12 h-12 cursor-pointer"
@@ -78,7 +87,14 @@ export default function AlgorithmSidebar({
           )}
         </button>
 
-        <button className="w-10 h-10 flex items-center justify-center border border-white/15 rounded-xl bg-[#1B1E24] hover:bg-[#1B1E24]/75 transition-colors cursor-pointer">
+        <button
+          onClick={() => {
+            if (step < MAX_STEP) {
+              setStep(step + 1);
+            }
+          }}
+          className="w-10 h-10 flex items-center justify-center border border-white/15 rounded-xl bg-[#1B1E24] hover:bg-[#1B1E24]/75 transition-colors cursor-pointer"
+        >
           <StepForward width={16} />
         </button>
       </div>
@@ -91,6 +107,7 @@ export default function AlgorithmSidebar({
       <Slider
         color="teal-accent"
         max={100}
+        disabled={isPlaying}
         value={[step]}
         onValueChange={(values) => {
           setStep(values[0]);
@@ -105,6 +122,7 @@ export default function AlgorithmSidebar({
       <Slider
         color="sky-accent"
         max={100}
+        disabled={isPlaying}
         value={[speed]}
         onValueChange={(values) => {
           setSpeed(values[0]);
@@ -118,7 +136,9 @@ export default function AlgorithmSidebar({
       </div>
       <Slider
         color="indigo-accent"
+        min={10}
         max={100}
+        disabled={isPlaying}
         value={[arrSize]}
         onValueChange={(values) => {
           setArrSize(values[0]);
