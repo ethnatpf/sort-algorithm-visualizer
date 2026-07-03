@@ -1,19 +1,15 @@
 "use client";
 import { memo, useEffect, useState } from "react";
-import type { Algorithm } from "@/lib/constants";
+import type { Algorithm, VisualizedItemWithId } from "@/lib/algorithm";
 import AlgorithmSidebar from "@/components/layout/algorithm-sidebar";
 import { capitalizeFirstLetter } from "@/lib/string";
 import clsx from "clsx";
 import { getRandomIntInclusive } from "@/lib/utils";
 import VisualizedItem, {
   getVisualizedItemColor,
-  VisualizedItemProps,
+  LineState,
 } from "@/components/visualized-item";
 import { Spinner } from "@/components/ui/spinner";
-
-interface ExtendedVisualizedItem extends VisualizedItemProps {
-  id: number;
-}
 
 function Home() {
   const [selectedAlgorithm, setSelectedAlgorithm] =
@@ -25,13 +21,13 @@ function Home() {
 
   // Generate a random array of values for the visualizedItems state.
   function generateItems(size: number) {
-    const arr: Array<ExtendedVisualizedItem> = [];
+    const arr: Array<VisualizedItemWithId> = [];
 
     for (let i = 0; i < size; i++) {
       arr.push({
         id: i,
         value: getRandomIntInclusive(1, 100),
-        state: "default",
+        state: LineState.DEFAULT,
       });
     }
 
@@ -40,7 +36,7 @@ function Home() {
 
   // Array of items to visualize
   const [visualizedItems, setVisualizedItems] = useState<
-    Array<ExtendedVisualizedItem>
+    Array<VisualizedItemWithId>
   >([]);
 
   // Only generate the items on mount (client-side)
@@ -59,16 +55,22 @@ function Home() {
   }
 
   const legendItems: Array<{ label: string; bgClass: string }> = [
-    { label: "Default", bgClass: `bg-[${getVisualizedItemColor("default")}]` },
+    {
+      label: "Default",
+      bgClass: `bg-[${getVisualizedItemColor(LineState.DEFAULT)}]`,
+    },
     {
       label: "Comparing",
-      bgClass: `bg-[${getVisualizedItemColor("comparing")}]`,
+      bgClass: `bg-[${getVisualizedItemColor(LineState.COMPARING)}]`,
     },
     {
       label: "Swapping",
-      bgClass: `bg-[${getVisualizedItemColor("swapping")}]`,
+      bgClass: `bg-[${getVisualizedItemColor(LineState.SWAPPING)}]`,
     },
-    { label: "Sorted", bgClass: `bg-[${getVisualizedItemColor("sorted")}]` },
+    {
+      label: "Sorted",
+      bgClass: `bg-[${getVisualizedItemColor(LineState.SORTED)}]`,
+    },
   ];
 
   function onRandomize() {

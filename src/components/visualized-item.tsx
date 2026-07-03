@@ -1,6 +1,11 @@
 import { memo } from "react";
 
-export type LineState = "default" | "comparing" | "swapping" | "sorted";
+export enum LineState {
+  DEFAULT = "default",
+  COMPARING = "comparing",
+  SWAPPING = "swapping",
+  SORTED = "sorted",
+}
 
 export interface VisualizedItemProps {
   // Value from 1 to 100
@@ -26,7 +31,7 @@ function VisualizedItem({ value, state }: Readonly<VisualizedItemProps>) {
   return (
     <div
       style={{ height: value + "%" }}
-      className={`bg-[${getVisualizedItemColor(state)}]  flex-1 rounded-t-lg`}
+      className={`bg-[${getVisualizedItemColor(state)}] flex-1 rounded-t-lg `}
     ></div>
   );
 }
