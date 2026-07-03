@@ -1,4 +1,4 @@
-// Disclaimer: tests has been AI generated.
+// Disclaimer: tests have been AI generated.
 import { LineState } from "@/components/visualized-item";
 import { generateSnapshotsBubble, VisualizedItemWithId } from "@/lib/algorithm";
 
