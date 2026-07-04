@@ -1,6 +1,6 @@
 "use client";
 import { Dispatch, SetStateAction } from "react";
-import { ALGORITHM_LIST } from "@/lib/algorithm";
+import { Algorithm, ALGORITHM_LIST } from "@/lib/algorithm";
 import { capitalizeFirstLetter } from "@/lib/string";
 import clsx from "clsx";
 import { PauseIcon, PlayIcon, StepBack, StepForward } from "lucide-react";
@@ -10,7 +10,7 @@ import { Button } from "../shadcn/button";
 interface Props {
   // State
   selectedAlgorithm: string;
-  setSelectedAlgorithm: Dispatch<SetStateAction<string>>;
+  setSelectedAlgorithm: Dispatch<SetStateAction<Algorithm>>;
   isPlaying: boolean;
   setIsPlaying: Dispatch<SetStateAction<boolean>>;
   step: number;
@@ -19,12 +19,12 @@ interface Props {
   setSpeed: Dispatch<SetStateAction<number>>;
   arrSize: number;
   setArrSize: (size: number) => void;
+  stepsCount: number;
   // Events
   onRandomize: () => void;
   onReset: () => void;
 }
 
-const MAX_STEP = 100;
 const MIN_STEP = 0;
 
 export default function AlgorithmSidebar({
@@ -38,6 +38,7 @@ export default function AlgorithmSidebar({
   setSpeed,
   arrSize,
   setArrSize,
+  stepsCount,
   onRandomize,
   onReset,
 }: Readonly<Props>) {
@@ -89,7 +90,7 @@ export default function AlgorithmSidebar({
 
         <button
           onClick={() => {
-            if (step < MAX_STEP) {
+            if (step < stepsCount) {
               setStep(step + 1);
             }
           }}
@@ -102,11 +103,13 @@ export default function AlgorithmSidebar({
       {/* Timeline slider */}
       <div className="flex justify-between mb-2">
         <span className="sidebar-label block ">TIMELINE</span>
-        <span className="text-[11px] text-secondary-text">{step}/100</span>
+        <span className="text-[11px] text-secondary-text">
+          {step}/{stepsCount}
+        </span>
       </div>
       <Slider
         color="teal-accent"
-        max={100}
+        max={stepsCount}
         disabled={isPlaying}
         value={[step]}
         onValueChange={(values) => {
@@ -121,8 +124,8 @@ export default function AlgorithmSidebar({
       </div>
       <Slider
         color="sky-accent"
+        min={1}
         max={100}
-        disabled={isPlaying}
         value={[speed]}
         onValueChange={(values) => {
           setSpeed(values[0]);

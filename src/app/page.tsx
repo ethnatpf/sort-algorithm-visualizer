@@ -1,6 +1,10 @@
 "use client";
-import { memo, useEffect, useState } from "react";
-import type { Algorithm, VisualizedItemWithId } from "@/lib/algorithm";
+import { memo, useEffect, useRef, useState } from "react";
+import {
+  generateSnapshotsByAlgorithm,
+  type Algorithm,
+  type VisualizedItemWithId,
+} from "@/lib/algorithm";
 import AlgorithmSidebar from "@/components/layout/algorithm-sidebar";
 import { capitalizeFirstLetter } from "@/lib/string";
 import clsx from "clsx";
@@ -34,22 +38,29 @@ function Home() {
     return arr;
   }
 
-  // Array of items to visualize
-  const [visualizedItems, setVisualizedItems] = useState<
-    Array<VisualizedItemWithId>
-  >([]);
+  const [visualizedSnapshots, setVisualizedSnapshots] =
+    useState<Array<Array<VisualizedItemWithId>>>();
 
-  // Only generate the items on mount (client-side)
+  function generateSnapshots(size: number) {
+    const items = generateItems(size);
+    setVisualizedSnapshots(
+      generateSnapshotsByAlgorithm(selectedAlgorithm, items),
+    );
+  }
+
+  const currentSnapshot = visualizedSnapshots?.[step] ?? [];
+
+  // Only generate the snapshots on mount (client-side)
   // Generating it as the initial value of the state would create an hydratation error, as the items are random.
   // This will cause an initial flash with empty values, but its an acceptable trade-of (instead of disabling SSR)
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only init to avoid SSR hydration mismatch (random values)
-    setVisualizedItems(generateItems(arrSize));
+    generateSnapshots(arrSize);
   }, []);
 
   function onSetArraySize(size: number) {
     setArrSize(size);
-    setVisualizedItems(generateItems(size));
+    generateSnapshots(size);
     setStep(0);
     setIsPlaying(false);
   }
@@ -74,7 +85,7 @@ function Home() {
   ];
 
   function onRandomize() {
-    setVisualizedItems(generateItems(arrSize));
+    generateSnapshots(arrSize);
     setStep(0);
     setIsPlaying(false);
   }
@@ -84,6 +95,67 @@ function Home() {
     setStep(0);
     setIsPlaying(false);
   }
+
+  const requestRef = useRef<null | number>(null);
+  const previousTimeRef = useRef<null | number>(null);
+  const accumulatedRef = useRef(0);
+
+  // Play the animation based on the speed.
+  // Chose to use requestAnimationFrame instead of setInterval to avoid "losing" snapshots visually when the speed is too high.
+  // The browser only repaints the screen at about 16.67ms for a 60hz screen, so updating the steps every 10ms for example would
+  // visually skip some snapshots.
+  useEffect(() => {
+    // Time is a timestamp that represents when the current frame started.
+    const animate = (time: number) => {
+      // ms elapsed since the last time we incremented the step
+      const accumulatedDeltaTime = previousTimeRef.current
+        ? time - previousTimeRef.current + accumulatedRef.current
+        : null;
+
+      // Determines at which interval we should increment the step at speed 0
+      const BASE_MS = 1000;
+      // For a base of 1000ms, this will be a range between 10ms and 1000ms
+      const calculatedMs = (1 - speed / 100) * BASE_MS;
+
+      if (
+        accumulatedDeltaTime === null ||
+        accumulatedDeltaTime > calculatedMs
+      ) {
+        setStep((previousStep) => {
+          if (previousStep < visualizedSnapshots!.length - 1) {
+            return previousStep + 1;
+          } else {
+            return previousStep;
+          }
+        });
+
+        accumulatedRef.current = 0;
+      } else if (previousTimeRef.current !== null) {
+        // If previousTimeRef is null, its the first iteration.
+        // We don't want to increment the accumulatedRef as we always increment the step initially
+        accumulatedRef.current += time - previousTimeRef.current;
+      }
+
+      previousTimeRef.current = time;
+      requestRef.current = requestAnimationFrame(animate);
+    };
+
+    if (isPlaying) {
+      requestRef.current = requestAnimationFrame(animate);
+    } else if (requestRef.current) {
+      cancelAnimationFrame(requestRef.current);
+      previousTimeRef.current = null;
+    }
+
+    return () => {
+      if (requestRef.current) {
+        // Here, we don't want to set the previousTimeRef to null as the cleanup function also runs when dependencies changes.
+        // Setting it to null would retrigger the initial step incrementation, which would visually appears as if the speed accelerates
+        // even if we are decreasing it inside the slider
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
+  }, [isPlaying, speed]);
 
   return (
     <div className="flex h-[calc(100vh-5rem)]">
@@ -120,8 +192,8 @@ function Home() {
 
         {/* Visualizer */}
         <div className="bg-[#181A20] p-4 rounded-lg border border-white/5 h-full flex items-end gap-x-2">
-          {visualizedItems.length ? (
-            visualizedItems.map((item) => (
+          {currentSnapshot.length ? (
+            currentSnapshot.map((item) => (
               <VisualizedItem
                 key={item.id}
                 value={item.value}
@@ -144,6 +216,7 @@ function Home() {
         setSpeed={setSpeed}
         arrSize={arrSize}
         setArrSize={onSetArraySize}
+        stepsCount={visualizedSnapshots ? visualizedSnapshots.length - 1 : 0}
         onRandomize={onRandomize}
         onReset={onReset}
       />
