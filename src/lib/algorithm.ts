@@ -15,6 +15,10 @@ export function generateSnapshotsByAlgorithm(
   switch (algo) {
     case "bubble":
       return generateSnapshotsBubble(items);
+    case "insertion":
+    case "merge":
+    case "quick":
+      return [];
     default:
       throw new Error(
         `Algorithm ${algo} has not been implemented yet or doesn't exist`,

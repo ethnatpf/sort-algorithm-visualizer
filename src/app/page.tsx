@@ -19,6 +19,8 @@ function Home() {
   const [step, setStep] = useState(0);
   const [speed, setSpeed] = useState(50);
   const [arrSize, setArrSize] = useState(40);
+  // TODO: Remove coming soon logic when all algorithm are implemented
+  const [comingSoon, setComingSoon] = useState(false);
 
   // Generate a random array of values for the visualizedItems state.
   function generateItems(size: number) {
@@ -37,11 +39,19 @@ function Home() {
   const [visualizedSnapshots, setVisualizedSnapshots] =
     useState<Array<Array<VisualizedItemProps>>>();
 
-  function generateSnapshots(size: number) {
+  function generateSnapshots(
+    size: number,
+    _selectedAlgorithm: Algorithm = selectedAlgorithm,
+  ) {
     const items = generateItems(size);
-    setVisualizedSnapshots(
-      generateSnapshotsByAlgorithm(selectedAlgorithm, items),
-    );
+    const snapshots = generateSnapshotsByAlgorithm(_selectedAlgorithm, items);
+    setVisualizedSnapshots(snapshots);
+
+    if (snapshots.length === 0) {
+      setComingSoon(true);
+    } else {
+      setComingSoon(false);
+    }
   }
 
   const currentSnapshot = visualizedSnapshots?.[step] ?? [];
@@ -57,6 +67,13 @@ function Home() {
   function onSetArraySize(size: number) {
     setArrSize(size);
     generateSnapshots(size);
+    setStep(0);
+    setIsPlaying(false);
+  }
+
+  function onSetSelectedAlgorithm(selectedAlgorithm: Algorithm) {
+    setSelectedAlgorithm(selectedAlgorithm);
+    generateSnapshots(arrSize, selectedAlgorithm);
     setStep(0);
     setIsPlaying(false);
   }
@@ -168,7 +185,8 @@ function Home() {
               <span className="font-jetbrains-mono text-secondary-text">
                 {step}
               </span>{" "}
-              / 100
+              /{" "}
+              {visualizedSnapshots ? visualizedSnapshots.length - 1 : "Loading"}
             </span>
           </div>
 
@@ -188,8 +206,15 @@ function Home() {
         </div>
 
         {/* Visualizer */}
-        <div className="bg-[#181A20] p-4 rounded-lg border border-white/5 h-full flex items-end gap-x-2">
-          {currentSnapshot.length ? (
+        <div
+          className={clsx(
+            "bg-[#181A20] p-4 rounded-lg border border-white/5 h-full flex items-end gap-x-2",
+            comingSoon && "justify-center !items-center",
+          )}
+        >
+          {comingSoon ? (
+            <span>Coming soon</span>
+          ) : currentSnapshot.length ? (
             currentSnapshot.map((item, idx) => (
               // Intentionally use an index as the key, so that we can animate the height of a visualized item when it changes order.
               // Using an id tied to the value/state instead of the order would move the whole component to its new position, so CSS wouldn't be able to detect
@@ -203,7 +228,7 @@ function Home() {
       </main>
       <AlgorithmSidebar
         selectedAlgorithm={selectedAlgorithm}
-        setSelectedAlgorithm={setSelectedAlgorithm}
+        setSelectedAlgorithm={onSetSelectedAlgorithm}
         isPlaying={isPlaying}
         setIsPlaying={setIsPlaying}
         step={step}

@@ -15,7 +15,7 @@ import {
 interface Props {
   // State
   selectedAlgorithm: string;
-  setSelectedAlgorithm: Dispatch<SetStateAction<Algorithm>>;
+  setSelectedAlgorithm: (algorithm: Algorithm) => void;
   isPlaying: boolean;
   setIsPlaying: Dispatch<SetStateAction<boolean>>;
   step: number;
