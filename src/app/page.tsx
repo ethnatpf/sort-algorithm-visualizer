@@ -10,7 +10,7 @@ import VisualizedItem, {
   LineState,
   VisualizedItemProps,
 } from "@/components/visualized-item";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shadcn/spinner";
 
 function Home() {
   const [selectedAlgorithm, setSelectedAlgorithm] =

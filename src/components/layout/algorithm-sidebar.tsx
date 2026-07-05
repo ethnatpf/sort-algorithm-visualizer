@@ -10,7 +10,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
+} from "@/components/shadcn/sidebar";
 
 interface Props {
   // State

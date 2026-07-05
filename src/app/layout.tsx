@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/shadcn/sidebar";
 import SmallScreenBlocked from "@/components/layout/small-screen-blocked";
 
 const InterFont = Inter({
