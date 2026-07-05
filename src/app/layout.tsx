@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const InterFont = Inter({
   variable: "--font-inter",
@@ -35,7 +36,9 @@ export default function RootLayout({
             </span>
           </div>
         </header>
-        {children}
+        <div className="flex h-[calc(100vh-5rem)]">
+          <SidebarProvider>{children}</SidebarProvider>
+        </div>
       </body>
     </html>
   );

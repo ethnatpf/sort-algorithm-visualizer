@@ -14,6 +14,7 @@ import VisualizedItem, {
   LineState,
 } from "@/components/visualized-item";
 import { Spinner } from "@/components/ui/spinner";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 function Home() {
   const [selectedAlgorithm, setSelectedAlgorithm] =
@@ -158,7 +159,7 @@ function Home() {
   }, [isPlaying, speed]);
 
   return (
-    <div className="flex h-[calc(100vh-5rem)]">
+    <>
       <main className="flex-1 flex flex-col bg-[#12141a] py-8 px-6  ">
         <div className="flex justify-between mb-6">
           {/* Sort title and step counter */}
@@ -220,7 +221,7 @@ function Home() {
         onRandomize={onRandomize}
         onReset={onReset}
       />
-    </div>
+    </>
   );
 }
 
