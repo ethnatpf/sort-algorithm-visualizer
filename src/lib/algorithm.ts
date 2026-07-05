@@ -106,6 +106,7 @@ export function generateSnapshotsBubble(
       // Don't update previousItems so that the next update will automatically remove comparing.
       snapshots.push(
         generateStateOnlySnapshot(
+          // Also change back the swapping states to comparing
           _previousItems,
           [i, i + 1],
           LineState.COMPARING,
@@ -113,27 +114,17 @@ export function generateSnapshotsBubble(
       );
 
       if (a.value > b.value) {
-        // Push the swapping state
-        // Don't update previousItems so that the next update will automatically remove swapping.
-        snapshots.push(
-          generateStateOnlySnapshot(
-            _previousItems,
-            [i, i + 1],
-            LineState.SWAPPING,
-          ),
-        );
-
         // Swap them
         _previousItems = _previousItems.map((item, idx) => {
           if (idx === i) {
             return {
               ...b,
-              state: LineState.DEFAULT,
+              state: LineState.SWAPPING,
             };
           } else if (idx === i + 1) {
             return {
               ...a,
-              state: LineState.DEFAULT,
+              state: LineState.SWAPPING,
             };
           } else {
             return item;
@@ -141,6 +132,17 @@ export function generateSnapshotsBubble(
         });
 
         snapshots.push(_previousItems);
+
+        _previousItems = _previousItems.map((item) => {
+          if (item.state === LineState.SWAPPING) {
+            return {
+              ...item,
+              state: LineState.DEFAULT,
+            };
+          } else {
+            return item;
+          }
+        });
 
         swappedItems = true;
       }
@@ -162,6 +164,18 @@ export function generateSnapshotsBubble(
   };
 
   runPass();
+
+  return snapshots;
+}
+
+// Generate all the snapshots using the insertion sort algorithm.
+export function generateSnapshotsInsertion(
+  items: Array<VisualizedItemProps>,
+): Array<Array<VisualizedItemProps>> {
+  const snapshots: Array<Array<VisualizedItemProps>> = [];
+
+  // Initial snapshot before any change
+  snapshots.push(items);
 
   return snapshots;
 }
