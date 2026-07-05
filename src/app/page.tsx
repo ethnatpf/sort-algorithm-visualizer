@@ -1,10 +1,6 @@
 "use client";
 import { memo, useEffect, useRef, useState } from "react";
-import {
-  generateSnapshotsByAlgorithm,
-  type Algorithm,
-  type VisualizedItemWithId,
-} from "@/lib/algorithm";
+import { generateSnapshotsByAlgorithm, type Algorithm } from "@/lib/algorithm";
 import AlgorithmSidebar from "@/components/layout/algorithm-sidebar";
 import { capitalizeFirstLetter } from "@/lib/string";
 import clsx from "clsx";
@@ -12,9 +8,9 @@ import { getRandomIntInclusive } from "@/lib/utils";
 import VisualizedItem, {
   getVisualizedItemColor,
   LineState,
+  VisualizedItemProps,
 } from "@/components/visualized-item";
 import { Spinner } from "@/components/ui/spinner";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 function Home() {
   const [selectedAlgorithm, setSelectedAlgorithm] =
@@ -26,11 +22,10 @@ function Home() {
 
   // Generate a random array of values for the visualizedItems state.
   function generateItems(size: number) {
-    const arr: Array<VisualizedItemWithId> = [];
+    const arr: Array<VisualizedItemProps> = [];
 
     for (let i = 0; i < size; i++) {
       arr.push({
-        id: i,
         value: getRandomIntInclusive(1, 100),
         state: LineState.DEFAULT,
       });
@@ -40,7 +35,7 @@ function Home() {
   }
 
   const [visualizedSnapshots, setVisualizedSnapshots] =
-    useState<Array<Array<VisualizedItemWithId>>>();
+    useState<Array<Array<VisualizedItemProps>>>();
 
   function generateSnapshots(size: number) {
     const items = generateItems(size);
@@ -126,6 +121,7 @@ function Home() {
           if (previousStep < visualizedSnapshots!.length - 1) {
             return previousStep + 1;
           } else {
+            setIsPlaying(false);
             return previousStep;
           }
         });
@@ -194,12 +190,11 @@ function Home() {
         {/* Visualizer */}
         <div className="bg-[#181A20] p-4 rounded-lg border border-white/5 h-full flex items-end gap-x-2">
           {currentSnapshot.length ? (
-            currentSnapshot.map((item) => (
-              <VisualizedItem
-                key={item.id}
-                value={item.value}
-                state={item.state}
-              />
+            currentSnapshot.map((item, idx) => (
+              // Intentionally use an index as the key, so that we can animate the height of a visualized item when it changes order.
+              // Using an id tied to the value/state instead of the order would move the whole component to its new position, so CSS wouldn't be able to detect
+              // an height change (as it did not actually changed, only its position inside the DOM changed)
+              <VisualizedItem key={idx} value={item.value} state={item.state} />
             ))
           ) : (
             <Spinner className="size-16 self-center mx-auto " />

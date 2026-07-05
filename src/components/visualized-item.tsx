@@ -31,7 +31,7 @@ function VisualizedItem({ value, state }: Readonly<VisualizedItemProps>) {
   return (
     <div
       style={{ height: value + "%" }}
-      className={`bg-[${getVisualizedItemColor(state)}] flex-1 rounded-t-lg `}
+      className={`bg-[${getVisualizedItemColor(state)}] flex-1 rounded-t-lg transition-[height] duration-300 ease-in-out`}
     ></div>
   );
 }

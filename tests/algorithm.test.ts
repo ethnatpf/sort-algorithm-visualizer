@@ -1,12 +1,12 @@
 // Disclaimer: tests have been AI generated.
-import { LineState } from "@/components/visualized-item";
-import { generateSnapshotsBubble, VisualizedItemWithId } from "@/lib/algorithm";
+import { LineState, VisualizedItemProps } from "@/components/visualized-item";
+import { generateSnapshotsBubble } from "@/lib/algorithm";
 
 function snapshot(
-  items: Array<{ id: number; value: number }>,
+  values: Array<number>,
   states: Array<LineState>,
-): Array<VisualizedItemWithId> {
-  return items.map(({ id, value }, i) => ({ id, value, state: states[i] }));
+): Array<VisualizedItemProps> {
+  return values.map((value, i) => ({ value, state: states[i] }));
 }
 
 const D = LineState.DEFAULT;
@@ -15,59 +15,27 @@ const S = LineState.SWAPPING;
 const SORTED = LineState.SORTED;
 
 describe("generateSnapshotsBubble", () => {
-  const arrayToSort: Array<VisualizedItemWithId> = [5, 1, 4, 2, 8].map(
-    (val, id) => ({
-      id,
-      value: val,
+  const arrayToSort: Array<VisualizedItemProps> = [5, 1, 4, 2, 8].map(
+    (value) => ({
+      value,
       state: LineState.DEFAULT,
     }),
   );
 
-  // Item identities (id) travel with the item as it swaps position, while
-  // values reorder around them. Each `arrN` below is one stable arrangement
-  // of positions; several snapshots share an arrangement while only the
-  // highlighted states change (compare -> swap -> settle).
-  const arr0 = [
-    { id: 0, value: 5 },
-    { id: 1, value: 1 },
-    { id: 2, value: 4 },
-    { id: 3, value: 2 },
-    { id: 4, value: 8 },
-  ];
-  const arr1 = [
-    { id: 1, value: 1 },
-    { id: 0, value: 5 },
-    { id: 2, value: 4 },
-    { id: 3, value: 2 },
-    { id: 4, value: 8 },
-  ]; // after swapping positions 0,1
-  const arr2 = [
-    { id: 1, value: 1 },
-    { id: 2, value: 4 },
-    { id: 0, value: 5 },
-    { id: 3, value: 2 },
-    { id: 4, value: 8 },
-  ]; // after swapping positions 1,2
-  const arr3 = [
-    { id: 1, value: 1 },
-    { id: 2, value: 4 },
-    { id: 3, value: 2 },
-    { id: 0, value: 5 },
-    { id: 4, value: 8 },
-  ]; // after swapping positions 2,3
-  const arr4 = [
-    { id: 1, value: 1 },
-    { id: 3, value: 2 },
-    { id: 2, value: 4 },
-    { id: 0, value: 5 },
-    { id: 4, value: 8 },
-  ]; // after swapping positions 1,2 (pass 2) - final sorted order
+  // Each arrN below is one stable arrangement of values (by position).
+  // Several snapshots share an arrangement while only the highlighted
+  // states change (compare -> swap -> settle).
+  const arr0 = [5, 1, 4, 2, 8];
+  const arr1 = [1, 5, 4, 2, 8]; // after swapping positions 0,1
+  const arr2 = [1, 4, 5, 2, 8]; // after swapping positions 1,2
+  const arr3 = [1, 4, 2, 5, 8]; // after swapping positions 2,3
+  const arr4 = [1, 2, 4, 5, 8]; // after swapping positions 1,2 (pass 2) - final sorted order
 
   // Each row documents the bubble sort step it represents, so a failure
   // points straight at the stage (compare / swap / settle / mark sorted)
   // that's broken, instead of a diff of the whole snapshot array.
   const expectedSteps: Array<
-    [description: string, expected: Array<VisualizedItemWithId>]
+    [description: string, expected: Array<VisualizedItemProps>]
   > = [
     ["initial array, all default", snapshot(arr0, [D, D, D, D, D])],
 
@@ -122,7 +90,7 @@ describe("generateSnapshotsBubble", () => {
     ],
   ];
 
-  let snapshots: Array<Array<VisualizedItemWithId>>;
+  let snapshots: Array<Array<VisualizedItemProps>>;
 
   beforeAll(() => {
     snapshots = generateSnapshotsBubble(arrayToSort);

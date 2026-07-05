@@ -8,14 +8,10 @@ export const ALGORITHM_LIST = [
 ] as const;
 export type Algorithm = (typeof ALGORITHM_LIST)[number];
 
-export interface VisualizedItemWithId extends VisualizedItemProps {
-  id: number;
-}
-
 export function generateSnapshotsByAlgorithm(
   algo: Algorithm,
-  items: Array<VisualizedItemWithId>,
-): Array<Array<VisualizedItemWithId>> {
+  items: Array<VisualizedItemProps>,
+): Array<Array<VisualizedItemProps>> {
   switch (algo) {
     case "bubble":
       return generateSnapshotsBubble(items);
@@ -29,7 +25,7 @@ export function generateSnapshotsByAlgorithm(
 // Helper to change the state of some items of an array of visualized items.
 // This will only break the reference of the changed item.
 function generateStateOnlySnapshot(
-  items: Array<VisualizedItemWithId>,
+  items: Array<VisualizedItemProps>,
   // Index of the items to change the state of.
   indexes: Array<number>,
   // New state of the items at idx
@@ -49,9 +45,9 @@ function generateStateOnlySnapshot(
 
 // Generate all the snapshots using the bubble sort algorithm.
 export function generateSnapshotsBubble(
-  items: Array<VisualizedItemWithId>,
-): Array<Array<VisualizedItemWithId>> {
-  const snapshots: Array<Array<VisualizedItemWithId>> = [];
+  items: Array<VisualizedItemProps>,
+): Array<Array<VisualizedItemProps>> {
+  const snapshots: Array<Array<VisualizedItemProps>> = [];
 
   // Initial snapshot before any change
   snapshots.push(items);
@@ -59,7 +55,7 @@ export function generateSnapshotsBubble(
   // Run a pass on the array.
   // Compare each value with the value at its right, and swap them if the right value is lower than the left value.
   const runPass = (
-    previousItems: Array<VisualizedItemWithId> = items,
+    previousItems: Array<VisualizedItemProps> = items,
     previousBubbledIndex: number | null = null,
   ) => {
     // Track if we swapped at least one item inside the pass.
