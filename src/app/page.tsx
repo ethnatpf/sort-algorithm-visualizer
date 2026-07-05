@@ -156,7 +156,7 @@ function Home() {
 
   return (
     <>
-      <main className="flex-1 flex flex-col bg-[#12141a] py-8 px-6  ">
+      <main className="flex flex-1 flex-col bg-[#12141a] py-8 px-6  ">
         <div className="flex justify-between mb-6">
           {/* Sort title and step counter */}
           <div>

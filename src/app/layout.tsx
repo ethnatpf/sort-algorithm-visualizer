@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import SmallScreenBlocked from "@/components/layout/small-screen-blocked";
 
 const InterFont = Inter({
   variable: "--font-inter",
@@ -28,17 +29,20 @@ export default function RootLayout({
       className={`${InterFont.variable} ${JetBrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-[#14161C]">
-        <header className="px-8 h-20 border-b border-[#FFFFFF]/15">
-          <div className="flex items-center h-full font-jetbrains-mono">
-            <span className="text-[#F4F5F7] font-semibold text-lg">sort</span>
-            <span className="text-teal-light-accent font-semibold text-lg">
-              ()
-            </span>
+        <div className="hidden lg:block">
+          <header className="px-8 h-20 border-b border-[#FFFFFF]/15">
+            <div className="flex items-center h-full font-jetbrains-mono">
+              <span className="text-[#F4F5F7] font-semibold text-lg">sort</span>
+              <span className="text-teal-light-accent font-semibold text-lg">
+                ()
+              </span>
+            </div>
+          </header>
+          <div className="flex h-[calc(100vh-5rem)]">
+            <SidebarProvider>{children}</SidebarProvider>
           </div>
-        </header>
-        <div className="flex h-[calc(100vh-5rem)]">
-          <SidebarProvider>{children}</SidebarProvider>
         </div>
+        <SmallScreenBlocked className="lg:hidden" />
       </body>
     </html>
   );
