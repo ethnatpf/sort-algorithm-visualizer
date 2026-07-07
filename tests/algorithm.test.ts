@@ -17,7 +17,7 @@ const C = LineState.COMPARING;
 const S = LineState.SWAPPING;
 const SORTED = LineState.SORTED;
 
-describe.only("generateSnapshotsBubble", () => {
+describe("generateSnapshotsBubble", () => {
   const arrayToSort: Array<VisualizedItemProps> = [5, 1, 4, 2, 8].map(
     (value) => ({
       value,
@@ -111,7 +111,7 @@ describe.only("generateSnapshotsBubble", () => {
   });
 });
 
-describe("generateSnapshotsInsertion", () => {
+describe.only("generateSnapshotsInsertion", () => {
   const arrayToSort: Array<VisualizedItemProps> = [5, 1, 4, 2, 8].map(
     (value) => ({
       value,
@@ -148,10 +148,12 @@ describe("generateSnapshotsInsertion", () => {
       snapshot(arr1, [SORTED, SORTED, D, D, D]),
     ],
 
+    // 1 5 4 2 8
     // Insert 4
     ["compares 5 and 4", snapshot(arr1, [SORTED, C, C, D, D])],
     ["swaps 5 and 4", snapshot(arr2, [SORTED, S, S, D, D])],
-    ["compares 1 and 4 (no swap needed)", snapshot(arr2, [C, C, D, D, D])],
+    // 1 4 5 2 8
+    ["compares 1 and 4 (no swap needed)", snapshot(arr2, [C, C, SORTED, D, D])],
     [
       "marks 1,4,5 as sorted after inserting 4",
       snapshot(arr2, [SORTED, SORTED, SORTED, D, D]),
@@ -160,9 +162,12 @@ describe("generateSnapshotsInsertion", () => {
     // Insert 2
     ["compares 5 and 2", snapshot(arr2, [SORTED, SORTED, C, C, D])],
     ["swaps 5 and 2", snapshot(arr3, [SORTED, SORTED, S, S, D])],
-    ["compares 4 and 2", snapshot(arr3, [SORTED, C, C, D, D])],
-    ["swaps 4 and 2", snapshot(arr4, [SORTED, S, S, D, D])],
-    ["compares 1 and 2 (no swap needed)", snapshot(arr4, [C, C, D, D, D])],
+    ["compares 4 and 2", snapshot(arr3, [SORTED, C, C, SORTED, D])],
+    ["swaps 4 and 2", snapshot(arr4, [SORTED, S, S, SORTED, D])],
+    [
+      "compares 1 and 2 (no swap needed)",
+      snapshot(arr4, [C, C, SORTED, SORTED, D]),
+    ],
     [
       "marks 1,2,4,5 as sorted after inserting 2",
       snapshot(arr4, [SORTED, SORTED, SORTED, SORTED, D]),

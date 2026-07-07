@@ -21,6 +21,7 @@ function Home() {
   const [arrSize, setArrSize] = useState(40);
   // TODO: Remove coming soon logic when all algorithm are implemented
   const [comingSoon, setComingSoon] = useState(false);
+  const currentItems = useRef<null | Array<VisualizedItemProps>>(null);
 
   // Generate a random array of values for the visualizedItems state.
   function generateItems(size: number) {
@@ -40,11 +41,12 @@ function Home() {
     useState<Array<Array<VisualizedItemProps>>>();
 
   function generateSnapshots(
-    size: number,
+    items: Array<VisualizedItemProps>,
     _selectedAlgorithm: Algorithm = selectedAlgorithm,
   ) {
-    const items = generateItems(size);
     const snapshots = generateSnapshotsByAlgorithm(_selectedAlgorithm, items);
+    // Save the current items as we sometimes we want to generate the snapshots without regenerating the items (for example on algorithm change)
+    currentItems.current = items;
     setVisualizedSnapshots(snapshots);
 
     if (snapshots.length === 0) {
@@ -61,19 +63,19 @@ function Home() {
   // This will cause an initial flash with empty values, but its an acceptable trade-of (instead of disabling SSR)
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only init to avoid SSR hydration mismatch (random values)
-    generateSnapshots(arrSize);
+    generateSnapshots(generateItems(arrSize));
   }, []);
 
   function onSetArraySize(size: number) {
     setArrSize(size);
-    generateSnapshots(size);
+    generateSnapshots(generateItems(size));
     setStep(0);
     setIsPlaying(false);
   }
 
   function onSetSelectedAlgorithm(selectedAlgorithm: Algorithm) {
     setSelectedAlgorithm(selectedAlgorithm);
-    generateSnapshots(arrSize, selectedAlgorithm);
+    generateSnapshots(currentItems.current!, selectedAlgorithm);
     setStep(0);
     setIsPlaying(false);
   }
@@ -98,7 +100,7 @@ function Home() {
   ];
 
   function onRandomize() {
-    generateSnapshots(arrSize);
+    generateSnapshots(generateItems(arrSize));
     setStep(0);
     setIsPlaying(false);
   }

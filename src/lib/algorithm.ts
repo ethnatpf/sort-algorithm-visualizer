@@ -16,6 +16,7 @@ export function generateSnapshotsByAlgorithm(
     case "bubble":
       return generateSnapshotsBubble(items);
     case "insertion":
+      return generateSnapshotsInsertion(items);
     case "merge":
     case "quick":
       return [];
@@ -64,7 +65,7 @@ export function generateSnapshotsBubble(
   ) => {
     // Track if we swapped at least one item inside the pass.
     let swappedItems = false;
-    // Assume the algorithm will break the references itself. (we want to avoid breaking all references everytime for optimization reasons)
+    // Assume the algorithm will break the references itself.
     let _previousItems = previousItems;
     // Keep track of the previous bubbled index (the last value of the array after each pass).
     // As the highest value always bubbles at the end of the array, we can ignore it for future passes.
@@ -133,6 +134,7 @@ export function generateSnapshotsBubble(
 
         snapshots.push(_previousItems);
 
+        // Remove the swapping items for the next snapshot
         _previousItems = _previousItems.map((item) => {
           if (item.state === LineState.SWAPPING) {
             return {
@@ -173,9 +175,73 @@ export function generateSnapshotsInsertion(
   items: Array<VisualizedItemProps>,
 ): Array<Array<VisualizedItemProps>> {
   const snapshots: Array<Array<VisualizedItemProps>> = [];
+  let _items = [...items];
 
-  // Initial snapshot before any change
-  snapshots.push(items);
+  // Initial snapshot - our sorted array starts with the first item of the array.
+  snapshots.push(generateStateOnlySnapshot(items, [0], LineState.SORTED));
+
+  // Process the unsorted items from the left, considering the index 0 already sorted
+  // *init*ItemToSortIdx as the index of the item to sort will change in the nested loop while we compare it to the sorted items.
+  for (
+    let initItemToSortIdx = 1;
+    initItemToSortIdx < _items.length;
+    initItemToSortIdx++
+  ) {
+    const itemToSort = _items[initItemToSortIdx];
+    // We divide the array into two sections, the left section being the sorted section, and the right section being the unsorted section.
+    const sortedItems = _items.slice(0, initItemToSortIdx);
+
+    let itemToSortIdx = initItemToSortIdx;
+
+    // Compare the itemToSort to the sorted items from the right
+    for (
+      let sortedItemIdx = sortedItems.length - 1;
+      sortedItemIdx >= 0;
+      sortedItemIdx--
+    ) {
+      const sortedItem = sortedItems[sortedItemIdx];
+
+      snapshots.push(
+        generateStateOnlySnapshot(
+          _items,
+          [itemToSortIdx, sortedItemIdx],
+          LineState.COMPARING,
+        ),
+      );
+
+      if (itemToSort.value >= sortedItem.value) {
+        // The itemToSort is already at the right index, continue to the next iteration
+        break;
+      } else {
+        _items = _items.map((item, idx) => {
+          if (idx === itemToSortIdx) {
+            return sortedItem;
+          } else if (idx === sortedItemIdx) {
+            return itemToSort;
+          } else {
+            return item;
+          }
+        });
+
+        // Swap them
+        snapshots.push(
+          generateStateOnlySnapshot(
+            _items,
+            [itemToSortIdx, sortedItemIdx],
+            LineState.SWAPPING,
+          ),
+        );
+
+        itemToSortIdx = sortedItemIdx;
+      }
+    }
+
+    const sortedIndexes = sortedItems.map((_, idx) => idx);
+    sortedIndexes.push(sortedIndexes.length);
+
+    _items = generateStateOnlySnapshot(_items, sortedIndexes, LineState.SORTED);
+    snapshots.push(_items);
+  }
 
   return snapshots;
 }
